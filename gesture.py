@@ -7,7 +7,7 @@ while(1):
         
     try:  #an error comes if it does not find anything in window as it cannot find contour of max area
           #therefore this try error statement
-          
+        #start the video  
         ret, frame = cap.read()
         frame=cv2.flip(frame,1)
         kernel = np.ones((3,3),np.uint8)
@@ -15,7 +15,7 @@ while(1):
         #define region of interest
         roi=frame[100:300, 100:300]
         
-        
+        #in the region of the video convert all the bzr colors to HSV
         cv2.rectangle(frame,(100,100),(300,300),(0,255,0),0)    
         hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
         
@@ -38,13 +38,13 @@ while(1):
         
         
         
-    #find contours
-        _,contours,hierarchy= cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    #find contours - outlines of any area in the region of interest
+        contours,hierarchy= cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     
    #find contour of max area(hand)
         cnt = max(contours, key = lambda x: cv2.contourArea(x))
         
-    #approx the contour a little
+    #approx the contour a little to dicrease the noise
         epsilon = 0.0005*cv2.arcLength(cnt,True)
         approx= cv2.approxPolyDP(cnt,epsilon,True)
        
@@ -109,20 +109,29 @@ while(1):
                 if arearatio<12:
                     cv2.putText(frame,'0',(0,50), font, 2, (0,0,255), 3, cv2.LINE_AA)
                 elif arearatio<17.5:
-                    cv2.putText(frame,'Best of luck',(0,50), font, 2, (0,0,255), 3, cv2.LINE_AA)
-                   
+                    cv2.putText(frame,'Best of luck',(0,50), font, 2, (0,0,255), 3, cv2.LINE_AA)       
                 else:
                     cv2.putText(frame,'1',(0,50), font, 2, (0,0,255), 3, cv2.LINE_AA)
                     
         elif l==2:
-            cv2.putText(frame,'2',(0,50), font, 2, (0,0,255), 3, cv2.LINE_AA)
+            if arearatio<27:
+                cv2.putText(frame,'2',(0,50), font, 2, (0,0,255), 3, cv2.LINE_AA)
+            # addition: if thumb and index they are more high in terms of arearatio - Loser
+            elif arearatio<35:
+                cv2.putText(frame,'loser',(0,50), font, 2, (0,0,255), 3, cv2.LINE_AA)
+            # addition: if pinky and index they are more high in terms of arearatio - Metal
+            else:
+                cv2.putText(frame,'metal',(0,50), font, 2, (0,0,255), 3, cv2.LINE_AA)
             
-        elif l==3:
-         
-              if arearatio<27:
-                    cv2.putText(frame,'3',(0,50), font, 2, (0,0,255), 3, cv2.LINE_AA)
-              else:
-                    cv2.putText(frame,'ok',(0,50), font, 2, (0,0,255), 3, cv2.LINE_AA)
+        elif l==3: 
+            if arearatio<27:
+                cv2.putText(frame,'3',(0,50), font, 2, (0,0,255), 3, cv2.LINE_AA)
+            # addition: if W sign is formed with the 4 fingers then they are more high in terms of arearatio - West coast
+            elif arearatio<33:
+                cv2.putText(frame,'west coast',(0,50), font, 2, (0,0,255), 3, cv2.LINE_AA)
+            
+            else:
+                cv2.putText(frame,'ok',(0,50), font, 2, (0,0,255), 3, cv2.LINE_AA)
                     
         elif l==4:
             cv2.putText(frame,'4',(0,50), font, 2, (0,0,255), 3, cv2.LINE_AA)
